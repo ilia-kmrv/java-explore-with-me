@@ -14,7 +14,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-@Transactional(readOnly = true)
+@Transactional
 public class HitServiceImpl implements HitService {
     private final HitRepository hitRepository;
 
@@ -26,6 +26,7 @@ public class HitServiceImpl implements HitService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<EndpointStats> getStats(String[] uris, LocalDateTime start, LocalDateTime end, Boolean unique) {
         log.debug("Обработка запроса на получение статистики по хитам за промежуток c {} по {}", start, end);
         return hitRepository.findEndpointStats(uris, start, end, unique);

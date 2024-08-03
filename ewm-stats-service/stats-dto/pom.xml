@@ -10,8 +10,6 @@
     </parent>
 
     <artifactId>stats-dto</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-    <name>Stats dto</name>
 
     <properties>
         <java.version>11</java.version>
