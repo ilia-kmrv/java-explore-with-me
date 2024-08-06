@@ -19,8 +19,9 @@ public class ErrorHandler {
     public ApiError handle(final MethodArgumentNotValidException e) {
         log.warn(e.getMessage());
         return ApiError.builder()
+                .errors(e.getStackTrace())
                 .message(e.getMessage())
-                .reason("Incorrectly made request")
+                .reason(HttpStatus.BAD_REQUEST.getReasonPhrase())
                 .status(String.valueOf(HttpStatus.BAD_REQUEST))
                 .timestamp(LocalDateTime.now())
                 .build();
@@ -31,8 +32,9 @@ public class ErrorHandler {
     public ApiError handle(final ResourceNotFoundException e) {
         log.warn(e.getMessage());
         return ApiError.builder()
+                .errors(e.getStackTrace())
                 .message(e.getMessage())
-                .reason("Resource not found")
+                .reason(HttpStatus.NOT_FOUND.getReasonPhrase())
                 .status(String.valueOf(HttpStatus.NOT_FOUND))
                 .timestamp(LocalDateTime.now())
                 .build();
@@ -43,8 +45,9 @@ public class ErrorHandler {
     public ApiError handle(final ResourceAlreadyExistsException e) {
         log.warn(e.getMessage());
         return ApiError.builder()
+                .errors(e.getStackTrace())
                 .message(e.getMessage())
-                .reason("Conflict data")
+                .reason(HttpStatus.CONFLICT.getReasonPhrase())
                 .status(String.valueOf(HttpStatus.CONFLICT))
                 .timestamp(LocalDateTime.now())
                 .build();
@@ -55,8 +58,9 @@ public class ErrorHandler {
     public ApiError handle(final ResourceValidationException e) {
         log.warn(e.getMessage());
         return ApiError.builder()
+                .errors(e.getStackTrace())
                 .message(e.getMessage())
-                .reason("Validation error")
+                .reason(HttpStatus.BAD_REQUEST.getReasonPhrase())
                 .status(String.valueOf(HttpStatus.BAD_REQUEST))
                 .timestamp(LocalDateTime.now())
                 .build();
@@ -67,8 +71,9 @@ public class ErrorHandler {
     public ApiError handle(final PermissionDeniedException e) {
         log.warn(e.getMessage());
         return ApiError.builder()
+                .errors(e.getStackTrace())
                 .message(e.getMessage())
-                .reason("Access denied")
+                .reason(HttpStatus.FORBIDDEN.getReasonPhrase())
                 .status(String.valueOf(HttpStatus.FORBIDDEN))
                 .timestamp(LocalDateTime.now())
                 .build();

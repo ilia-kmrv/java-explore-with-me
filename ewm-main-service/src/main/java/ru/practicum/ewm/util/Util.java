@@ -11,15 +11,16 @@ import java.time.format.DateTimeFormatter;
 public class Util {
     public static final String TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
-    public static LocalDateTime toLocalDateTime(String dateString) {
+    public LocalDateTime toLocalDateTime(String dateString) {
         return LocalDateTime.parse(dateString, DateTimeFormatter.ofPattern(TIME_FORMAT));
     }
 
-    public static String toStringTime(LocalDateTime localDateTime) {
+    public String toStringTime(LocalDateTime localDateTime) {
         return localDateTime.format(DateTimeFormatter.ofPattern(TIME_FORMAT));
     }
 
-    public static Pageable page(int from, int size) {
+    public Pageable page(int from, int size) {
         return PageRequest.of(from > 0 ? from / size : 0, size);
     }
 }
+
