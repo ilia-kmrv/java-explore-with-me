@@ -1,7 +1,6 @@
 package ru.practicum.ewm.event.model;
 
 import lombok.*;
-import org.springframework.stereotype.Service;
 import ru.practicum.ewm.category.model.Category;
 import ru.practicum.ewm.user.model.User;
 
@@ -24,18 +23,47 @@ public class Event {
     @Column(nullable = false)
     private String annotation;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
     private Category category;
-    private Integer confirmedRequests;
+
+    @Column(name = "created_date")
     private LocalDateTime createdOn;
+
+    @Column(name = "description")
     private String description;
+
+    @Column(name = "event_date")
     private LocalDateTime eventDate;
+
+    @ManyToOne
+    @JoinColumn(name = "initiator_id")
     private User initiator;
+
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "lat", column = @Column(name = "latitude")),
+            @AttributeOverride(name = "lon", column = @Column(name = "longitude"))
+    })
     private Location location;
+
+    @Column(name = "paid")
     private Boolean paid;
+
+    @Column(name = "participant_limit")
     private Integer participantLimit;
+
+    @Column(name = "published_date")
     private LocalDateTime publishedOn;
+
+    @Column(name = "request_moderation")
     private Boolean requestModeration;
+
+    @Column(name = "state")
+    @Enumerated(EnumType.STRING)
     private EventState state;
+
+    @Column(name = "title")
     private String title;
 
 }
