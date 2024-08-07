@@ -3,7 +3,9 @@ package ru.practicum.ewm.util;
 import lombok.experimental.UtilityClass;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -19,8 +21,16 @@ public class Util {
         return localDateTime.format(DateTimeFormatter.ofPattern(TIME_FORMAT));
     }
 
+    public LocalDateTime now() {
+        return LocalDateTime.now();
+    }
+
     public Pageable page(int from, int size) {
         return PageRequest.of(from > 0 ? from / size : 0, size);
+    }
+
+    public Pageable page(int from, int size, Sort sort) {
+        return PageRequest.of(from > 0 ? from / size : 0, size, sort);
     }
 }
 

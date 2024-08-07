@@ -3,6 +3,7 @@ package ru.practicum.ewm.exception;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -29,7 +30,7 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ApiError handle(final ResourceNotFoundException e) {
+    public ApiError handle(final NotFoundException e) {
         log.warn(e.getMessage());
         return ApiError.builder()
                 .errors(e.getStackTrace())
@@ -42,7 +43,7 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ApiError handle(final ResourceAlreadyExistsException e) {
+    public ApiError handle(final ConflictException e) {
         log.warn(e.getMessage());
         return ApiError.builder()
                 .errors(e.getStackTrace())
@@ -55,7 +56,20 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ApiError handle(final ResourceValidationException e) {
+    public ApiError handle(final ValidationException e) {
+        log.warn(e.getMessage());
+        return ApiError.builder()
+                .errors(e.getStackTrace())
+                .message(e.getMessage())
+                .reason(HttpStatus.BAD_REQUEST.getReasonPhrase())
+                .status(String.valueOf(HttpStatus.BAD_REQUEST))
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiError handle(final MissingServletRequestParameterException e) {
         log.warn(e.getMessage());
         return ApiError.builder()
                 .errors(e.getStackTrace())

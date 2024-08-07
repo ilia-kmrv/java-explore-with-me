@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.ewm.exception.ResourceNotFoundException;
+import ru.practicum.ewm.exception.NotFoundException;
 import ru.practicum.ewm.user.model.User;
 import ru.practicum.ewm.user.repository.UserRepository;
 import ru.practicum.ewm.util.Util;
@@ -40,7 +40,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(Long userId) {
         log.debug("Обработка запроса на удаление пользователя по id={}", userId);
-        userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException(User.class, userId));
+        userRepository.findById(userId).orElseThrow(() -> new NotFoundException(User.class, userId));
         userRepository.deleteById(userId);
     }
 }

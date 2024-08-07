@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewm.category.model.Category;
 import ru.practicum.ewm.category.repository.CategoryRepository;
-import ru.practicum.ewm.exception.ResourceNotFoundException;
+import ru.practicum.ewm.exception.NotFoundException;
 import ru.practicum.ewm.util.Util;
 
 import java.util.List;
@@ -37,7 +37,7 @@ public class CategoryServiceImpl implements CategoryService {
     public void deleteCategory(Long id) {
         log.debug("Обработка запроса на удаление категории с id={}", id);
         // TODO: category link to events check
-        categoryRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(Category.class, id));
+        categoryRepository.findById(id).orElseThrow(() -> new NotFoundException(Category.class, id));
         categoryRepository.deleteById(id);
     }
 
@@ -52,6 +52,6 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional(readOnly = true)
     public Category getCategory(Long id) {
         log.debug("Обработка запроса на получение категории с id={}", id);
-        return categoryRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(Category.class, id));
+        return categoryRepository.findById(id).orElseThrow(() -> new NotFoundException(Category.class, id));
     }
 }

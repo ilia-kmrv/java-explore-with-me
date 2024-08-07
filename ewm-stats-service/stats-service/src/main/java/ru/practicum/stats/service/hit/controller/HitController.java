@@ -32,8 +32,8 @@ public class HitController {
                                         @RequestParam String end,
                                         @RequestParam(defaultValue = "false") Boolean unique) {
         log.info("Получен запрос на просмотр статистики");
-        LocalDateTime startDate = Util.toLocalDateTime(start);
-        LocalDateTime endDate = Util.toLocalDateTime(end);
+        LocalDateTime startDate = Util.decode(start);
+        LocalDateTime endDate = Util.decode(end);
         return hitService.getStats(uris, startDate, endDate, unique);
     }
 
