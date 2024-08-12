@@ -38,4 +38,6 @@ public interface EventService {
                                                     Integer size);
 
     EventFullDto getEventByPublic(Long id);
+
+    List<EventShortDto> makeEventShortDtoList(List<Event> events);
 }

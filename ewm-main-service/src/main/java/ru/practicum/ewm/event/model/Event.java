@@ -69,4 +69,12 @@ public class Event {
     @Column(name = "title")
     private String title;
 
+    @PrePersist
+    public void prePersistDefault() {
+        confirmedRequests = 0L;
+        createdOn = LocalDateTime.now();
+        state = EventState.PENDING;
+        requestModeration = true;
+    }
+
 }

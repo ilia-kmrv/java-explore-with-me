@@ -2,8 +2,8 @@ package ru.practicum.ewm.request.repository;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import ru.practicum.ewm.request.model.IRequestCount;
 import ru.practicum.ewm.request.model.Request;
-import ru.practicum.ewm.request.model.RequestCount;
 import ru.practicum.ewm.request.model.RequestStatus;
 
 import java.util.Collection;
@@ -23,8 +23,8 @@ public interface RequestRepository extends CrudRepository<Request, Long> {
 
     List<Request> findAllByStatusAndIdIn(RequestStatus status, Collection<Long> requestIds);
 
-    @Query("SELECT new ru.practicum.ewm.request.model.RequestCount(r.event.id, COUNT(DISTINCT r.id)) " +
+    @Query("SELECT r.event.id AS eventRequests, COUNT(DISTINCT r.id) AS countRequests " +
             "FROM Request AS r WHERE r.event.id  IN (:eventIds) AND r.status = :status " +
-            "GROUP BY r.event ")
-    List<RequestCount> countAllByStatusAndEventIdIn(RequestStatus status, Set<Long> eventIds);
+            "GROUP BY r.event.id ")
+    List<IRequestCount> countAllByStatusAndEventIdIn(RequestStatus status, Set<Long> eventIds);
 }

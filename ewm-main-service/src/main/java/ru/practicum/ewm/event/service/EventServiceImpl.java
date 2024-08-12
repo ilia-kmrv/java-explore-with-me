@@ -16,7 +16,7 @@ import ru.practicum.ewm.event.repository.EventRepository;
 import ru.practicum.ewm.exception.ConflictException;
 import ru.practicum.ewm.exception.NotFoundException;
 import ru.practicum.ewm.exception.ValidationException;
-import ru.practicum.ewm.request.model.RequestCount;
+import ru.practicum.ewm.request.model.IRequestCount;
 import ru.practicum.ewm.request.model.RequestStatus;
 import ru.practicum.ewm.request.repository.RequestRepository;
 import ru.practicum.ewm.user.model.User;
@@ -219,16 +219,30 @@ public class EventServiceImpl implements EventService {
         return EventMapper.toEventFullDto(savedEvent, confirmedRequestCounts.get(eventId), views.get(eventId));
     }
 
+    @Override
+    public List<EventShortDto> makeEventShortDtoList(List<Event> events) {
+        if (events == null || events.isEmpty()) {
+            return Collections.emptyList();
+        }
+        Set<Long> eventIds = events.stream().map(Event::getId).collect(Collectors.toSet());
+        Map<Long, Long> confirmedRequests = fetchConfirmedRequests(eventIds);
+        Map<Long, Long> views = fetchEndpointStats(eventIds);
+
+        return events.stream().map(e -> EventMapper.toEventShortDto(e,
+                confirmedRequests.get(e.getId()),
+                views.get(e.getId())))
+                .collect(Collectors.toList());
+    }
+
     private Map<Long, Long> fetchConfirmedRequests(Set<Long> eventIds) {
-        // TODO: check this method
         if (eventIds == null || eventIds.isEmpty()) {
             return Collections.emptyMap();
         }
 
-        List<RequestCount> requestCounts = requestRepository.countAllByStatusAndEventIdIn(RequestStatus.CONFIRMED,
+        List<IRequestCount> requestCounts = requestRepository.countAllByStatusAndEventIdIn(RequestStatus.CONFIRMED,
                 eventIds);
         Map<Long, Long> eventRequestCounts = requestCounts.stream()
-                .collect(Collectors.toMap(RequestCount::getEventId, RequestCount::getRequestCount));
+                .collect(Collectors.toMap(IRequestCount::getEventRequests, IRequestCount::getCountRequests));
         eventIds.forEach(id -> eventRequestCounts.putIfAbsent(id, 0L));
 
         return eventRequestCounts;
