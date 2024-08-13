@@ -11,6 +11,7 @@ import ru.practicum.ewm.event.model.EventSort;
 import ru.practicum.ewm.event.service.EventService;
 import ru.practicum.ewm.util.Util;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalDateTime;
@@ -36,16 +37,17 @@ public class PublicEventController {
                                                   @RequestParam(required = false, defaultValue = "false") Boolean onlyAvailable,
                                                   @RequestParam(required = false) EventSort sort,
                                                   @RequestParam(defaultValue = "0") @PositiveOrZero Integer from,
-                                                  @RequestParam(defaultValue = "10") @Positive Integer size) {
+                                                  @RequestParam(defaultValue = "10") @Positive Integer size,
+                                                  HttpServletRequest request) {
         log.info("Получен публичный запрос на просмотр событий");
         //TODO: date range validation
         return eventService.getAllEventShortDtoByPublic(text, categories, paid, rangeStart, rangeEnd, onlyAvailable,
-                sort, from, size);
+                sort, from, size, request);
     }
 
     @GetMapping("/{id}")
-    public EventFullDto getEventPublic(@PathVariable Long id) {
+    public EventFullDto getEventPublic(@PathVariable Long id, HttpServletRequest request) {
         log.info("Получен публичный запрос на просмотр события с id={}", id);
-        return eventService.getEventByPublic(id);
+        return eventService.getEventByPublic(id, request);
     }
 }

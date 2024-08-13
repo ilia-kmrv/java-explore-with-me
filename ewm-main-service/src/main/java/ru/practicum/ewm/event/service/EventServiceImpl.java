@@ -2,6 +2,7 @@ package ru.practicum.ewm.event.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,8 +24,10 @@ import ru.practicum.ewm.user.model.User;
 import ru.practicum.ewm.user.repository.UserRepository;
 import ru.practicum.ewm.util.Util;
 import ru.practicum.stats.client.StatsClient;
+import ru.practicum.stats.dto.EndpointHit;
 import ru.practicum.stats.dto.ViewStats;
 
+import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -40,6 +43,9 @@ public class EventServiceImpl implements EventService {
     private final CategoryRepository categoryRepository;
     private final RequestRepository requestRepository;
     private final StatsClient statsClient;
+
+    @Value("${app.name}")
+    private String appName;
 
     @Override
     public Event addEvent(Long userId, NewEventDto newEventDto) {
@@ -107,10 +113,11 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<EventShortDto> getAllEventShortDtoByPublic(String text, Long[] categories, Boolean paid,
                                                            LocalDateTime rangeStart, LocalDateTime rangeEnd,
                                                            Boolean onlyAvailable, EventSort sort,
-                                                           Integer from, Integer size) {
+                                                           Integer from, Integer size, HttpServletRequest request) {
         log.debug("Обработка публичного запроса на просмотр событий");
         List<Event> events = eventRepository.findAllByPublicParams(text, categories, paid, rangeStart, rangeEnd,
                 onlyAvailable, Util.page(from, size, Sort.by(Sort.Direction.DESC, "eventDate")));
@@ -134,6 +141,15 @@ public class EventServiceImpl implements EventService {
                     eventComparator = Comparator.comparing(EventShortDto::getEventDate);
             }
         }
+
+        EndpointHit endpointHit = EndpointHit.builder()
+                .app(appName)
+                .uri(request.getRequestURI())
+                .ip(request.getRemoteAddr())
+                .timestamp(Util.toStringTime(Util.now()))
+                .build();
+        statsClient.createHit(endpointHit);
+
         return events.stream()
                 .map(e -> EventMapper.toEventShortDto(e,
                         confirmedRequestCounts.get(e.getId()),
@@ -144,12 +160,22 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public EventFullDto getEventByPublic(Long id) {
+    @Transactional(readOnly = true)
+    public EventFullDto getEventByPublic(Long id, HttpServletRequest request) {
         log.debug("Обработка публичного запроса на просмотр события с id={}");
         Event event = eventRepository.findByIdAndState(id, EventState.PUBLISHED)
                 .orElseThrow(() -> new NotFoundException(Event.class, id));
         Map<Long, Long> confirmedRequestCounts = fetchConfirmedRequests(Set.of(id));
         Map<Long, Long> views = fetchEndpointStats(Set.of(id));
+
+        EndpointHit endpointHit = EndpointHit.builder()
+                .app(appName)
+                .uri(request.getRequestURI())
+                .ip(request.getRemoteAddr())
+                .timestamp(Util.toStringTime(Util.now()))
+                .build();
+        statsClient.createHit(endpointHit);
+
         return EventMapper.toEventFullDto(event, confirmedRequestCounts.get(id), views.get(id));
     }
 
@@ -203,6 +229,7 @@ public class EventServiceImpl implements EventService {
             switch (updateEventAdminRequest.getStateAction()) {
                 case PUBLISH_EVENT:
                     event.setState(EventState.PUBLISHED);
+                    event.setPublishedOn(Util.now());
                     break;
                 case REJECT_EVENT:
                     event.setState(EventState.CANCELED);
@@ -259,7 +286,7 @@ public class EventServiceImpl implements EventService {
                 Util.now().minusYears(1),
                 Util.now(),
                 uris,
-                false)
+                true)
                 .getBody();
 
         viewStats.forEach(view -> {

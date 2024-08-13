@@ -60,6 +60,7 @@ public class CompilationServiceImpl implements CompilationService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<CompilationDto> getAllCompilations(Boolean pinned, Integer from, Integer size) {
         log.info("Обработка запроса на просмотр pinned={} подборок событий с {} по {}", pinned, from, size);
         //TODO: get all compilations service method
@@ -74,6 +75,7 @@ public class CompilationServiceImpl implements CompilationService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public CompilationDto getCompilation(Long compId) {
         log.info("Обработка запроса на просмотр подборки с id={}", compId);
         //TODO: get compilation service method
