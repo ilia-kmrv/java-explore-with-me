@@ -13,7 +13,6 @@ import ru.practicum.stats.dto.EndpointHit;
 import ru.practicum.stats.dto.Util;
 import ru.practicum.stats.dto.ViewStats;
 
-import java.lang.reflect.ParameterizedType;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;

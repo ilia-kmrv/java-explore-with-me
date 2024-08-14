@@ -56,7 +56,9 @@ public class CustomizedEventRepositoryImpl implements CustomizedEventRepository 
         cq.where(cb.and(predicates.toArray(new Predicate[0])));
         cq.orderBy(QueryUtils.toOrders(page.getSort(), root, cb));
 
-        List<Event> events = entityManager.createQuery(cq).getResultList();
+        List<Event> events = entityManager.createQuery(cq)
+                .setMaxResults(page.getPageSize())
+                .getResultList();
         return events;
     }
 
@@ -108,7 +110,9 @@ public class CustomizedEventRepositoryImpl implements CustomizedEventRepository 
         cq.where(cb.and(predicates.toArray(new Predicate[0])));
         cq.orderBy(QueryUtils.toOrders(page.getSort(), root, cb));
 
-        List<Event> events = entityManager.createQuery(cq).getResultList();
+        List<Event> events = entityManager.createQuery(cq)
+                .setMaxResults(page.getPageSize())
+                .getResultList();
         return events;
     }
 }

@@ -7,7 +7,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.event.dto.EventFullDto;
 import ru.practicum.ewm.event.dto.UpdateEventAdminRequest;
-import ru.practicum.ewm.event.mapper.EventMapper;
 import ru.practicum.ewm.event.model.EventState;
 import ru.practicum.ewm.event.service.EventService;
 import ru.practicum.ewm.util.Util;
@@ -17,7 +16,6 @@ import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping(path = "/admin/events")
@@ -35,8 +33,8 @@ public class AdminEventController {
                                                @DateTimeFormat(pattern = Util.TIME_FORMAT) LocalDateTime rangeStart,
                                                @RequestParam(required = false)
                                                @DateTimeFormat(pattern = Util.TIME_FORMAT) LocalDateTime rangeEnd,
-                                               @RequestParam @PositiveOrZero Integer from,
-                                               @RequestParam @Positive Integer size) {
+                                               @RequestParam(defaultValue = "0") @PositiveOrZero Integer from,
+                                               @RequestParam(defaultValue = "10") @Positive Integer size) {
         log.info("Получен запрос на поиск событий админом");
         return eventService.getAllEventFullDtoByAdmin(users, states, categories, rangeStart, rangeEnd, from, size);
     }

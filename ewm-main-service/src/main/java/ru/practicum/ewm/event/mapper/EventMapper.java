@@ -11,8 +11,6 @@ import ru.practicum.ewm.user.model.User;
 import ru.practicum.ewm.util.Util;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @UtilityClass
 public class EventMapper {

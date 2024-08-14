@@ -40,7 +40,7 @@ public class PublicEventController {
                                                   @RequestParam(defaultValue = "10") @Positive Integer size,
                                                   HttpServletRequest request) {
         log.info("Получен публичный запрос на просмотр событий");
-        //TODO: date range validation
+
         return eventService.getAllEventShortDtoByPublic(text, categories, paid, rangeStart, rangeEnd, onlyAvailable,
                 sort, from, size, request);
     }

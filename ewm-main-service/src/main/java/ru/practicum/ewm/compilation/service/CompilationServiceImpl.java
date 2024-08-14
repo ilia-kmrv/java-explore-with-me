@@ -2,7 +2,6 @@ package ru.practicum.ewm.compilation.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewm.compilation.dto.CompilationDto;
@@ -12,14 +11,15 @@ import ru.practicum.ewm.compilation.mapper.CompilationMapper;
 import ru.practicum.ewm.compilation.model.Compilation;
 import ru.practicum.ewm.compilation.repository.CompilationRepository;
 import ru.practicum.ewm.event.dto.EventShortDto;
-import ru.practicum.ewm.event.mapper.EventMapper;
 import ru.practicum.ewm.event.model.Event;
 import ru.practicum.ewm.event.repository.EventRepository;
 import ru.practicum.ewm.event.service.EventService;
 import ru.practicum.ewm.exception.NotFoundException;
 import ru.practicum.ewm.util.Util;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -63,13 +63,12 @@ public class CompilationServiceImpl implements CompilationService {
     @Transactional(readOnly = true)
     public List<CompilationDto> getAllCompilations(Boolean pinned, Integer from, Integer size) {
         log.info("Обработка запроса на просмотр pinned={} подборок событий с {} по {}", pinned, from, size);
-        //TODO: get all compilations service method
         if (pinned == null) {
             pinned = false;
         }
         List<Compilation> compilations = compilationRepository.findAllByPinned(pinned, Util.page(from, size));
-        List<Event> events = compilations.stream().map(Compilation::getEvents).flatMap(List::stream).collect(Collectors.toList());
-        List<EventShortDto> eventShortDtoList = eventService.makeEventShortDtoList(events);
+        Set<Event> events = compilations.stream().map(Compilation::getEvents).flatMap(List::stream).collect(Collectors.toSet());
+        List<EventShortDto> eventShortDtoList = eventService.makeEventShortDtoList(new ArrayList<>(events));
 
         return CompilationMapper.toDtoList(compilations, eventShortDtoList);
     }
@@ -78,7 +77,6 @@ public class CompilationServiceImpl implements CompilationService {
     @Transactional(readOnly = true)
     public CompilationDto getCompilation(Long compId) {
         log.info("Обработка запроса на просмотр подборки с id={}", compId);
-        //TODO: get compilation service method
         Compilation compilation = compilationRepository.findById(compId)
                 .orElseThrow(() -> new NotFoundException(Compilation.class, compId));
         List<EventShortDto> eventShortDtoList = eventService.makeEventShortDtoList(compilation.getEvents());

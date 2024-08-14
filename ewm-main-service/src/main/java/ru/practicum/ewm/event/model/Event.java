@@ -1,6 +1,5 @@
 package ru.practicum.ewm.event.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import ru.practicum.ewm.category.model.Category;
 import ru.practicum.ewm.user.model.User;
@@ -74,7 +73,6 @@ public class Event {
         confirmedRequests = 0L;
         createdOn = LocalDateTime.now();
         state = EventState.PENDING;
-        requestModeration = true;
     }
 
 }

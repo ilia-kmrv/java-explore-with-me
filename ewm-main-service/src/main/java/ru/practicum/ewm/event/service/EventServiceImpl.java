@@ -62,7 +62,7 @@ public class EventServiceImpl implements EventService {
     public EventFullDto getUserEventFullDtoById(Long userId, Long eventId) {
         log.debug("Обработка запроса просмотра события id={} пользователя id={}", eventId, userId);
         userRepository.findById(userId).orElseThrow(() -> new NotFoundException(User.class, userId));
-        Event event = eventRepository.findByInitiatorIdAndId(eventId, userId)
+        Event event = eventRepository.findByInitiatorIdAndId(userId, eventId)
                 .orElseThrow(() -> new NotFoundException(Event.class, eventId));
         Map<Long, Long> confirmedRequestCounts = fetchConfirmedRequests(Set.of(eventId));
         Map<Long, Long> views = fetchEndpointStats(Set.of(eventId));
@@ -119,6 +119,10 @@ public class EventServiceImpl implements EventService {
                                                            Boolean onlyAvailable, EventSort sort,
                                                            Integer from, Integer size, HttpServletRequest request) {
         log.debug("Обработка публичного запроса на просмотр событий");
+
+        if (rangeEnd != null && rangeStart != null && rangeEnd.isBefore(rangeStart)) {
+            throw new ValidationException("Диапазон времени указан неверно.");
+        }
         List<Event> events = eventRepository.findAllByPublicParams(text, categories, paid, rangeStart, rangeEnd,
                 onlyAvailable, Util.page(from, size, Sort.by(Sort.Direction.DESC, "eventDate")));
 
@@ -190,7 +194,7 @@ public class EventServiceImpl implements EventService {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException(Event.class, eventId));
 
-        if (event.getInitiator().getId().equals(userId)) {
+        if (!event.getInitiator().getId().equals(userId)) {
             throw new ValidationException("Пользователь не инициатор события");
         }
         if (event.getState() == EventState.PUBLISHED) {
@@ -228,6 +232,9 @@ public class EventServiceImpl implements EventService {
         if (updateEventAdminRequest.getStateAction() != null) {
             switch (updateEventAdminRequest.getStateAction()) {
                 case PUBLISH_EVENT:
+                    if (event.getState() != EventState.PENDING) {
+                        throw new ConflictException("Публиковать можно только события в состоянии ожидания.");
+                    }
                     event.setState(EventState.PUBLISHED);
                     event.setPublishedOn(Util.now());
                     break;

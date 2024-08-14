@@ -17,7 +17,7 @@ public interface RequestRepository extends CrudRepository<Request, Long> {
 
     List<Request> findAllByRequesterId(Long userId);
 
-    Integer countByStatusAndEventId(RequestStatus status, Long eventId);
+    Long countByStatusAndEventId(RequestStatus status, Long eventId);
 
     List<Request> findAllByEventId(Long eventId);
 
@@ -27,4 +27,6 @@ public interface RequestRepository extends CrudRepository<Request, Long> {
             "FROM Request AS r WHERE r.event.id  IN (:eventIds) AND r.status = :status " +
             "GROUP BY r.event.id ")
     List<IRequestCount> countAllByStatusAndEventIdIn(RequestStatus status, Set<Long> eventIds);
+
+    List<Request> findAllByIdIn(List<Long> requestIds);
 }
