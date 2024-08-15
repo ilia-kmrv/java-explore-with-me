@@ -117,9 +117,6 @@ public class RequestServiceImpl implements RequestService {
         long placesLeft = event.getParticipantLimit() - event.getConfirmedRequests();
 
         for (Request request : requests) {
-//            if (request.getStatus() != RequestStatus.PENDING) {
-//                throw new ConflictException("Редактировать можно только заявки в состоянии ожидания.");
-//            }
             if (update.getStatus() == RequestStatus.REJECTED) {
                 request.setStatus(RequestStatus.REJECTED);
                 rejectedRequests.add(request);
@@ -131,7 +128,6 @@ public class RequestServiceImpl implements RequestService {
             } else {
                 request.setStatus(RequestStatus.REJECTED);
                 rejectedRequests.add(request);
-//                throw new ConflictException("Превышен лимит участников события или заявка не в статусе ожидания");
             }
         }
 

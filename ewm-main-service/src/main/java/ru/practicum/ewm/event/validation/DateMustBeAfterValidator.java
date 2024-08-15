@@ -7,13 +7,14 @@ import java.time.LocalDateTime;
 
 public class DateMustBeAfterValidator implements ConstraintValidator<DateMustBeAfter, LocalDateTime> {
 
-    private LocalDateTime date;
+    private int hours;
 
     public void initialize(DateMustBeAfter annotation) {
-        date = LocalDateTime.now().plusHours(annotation.hours());
+        hours = annotation.hours();
     }
 
     public boolean isValid(LocalDateTime value, ConstraintValidatorContext context) {
+        LocalDateTime date = LocalDateTime.now().plusHours(hours);
         boolean valid = true;
         if (value != null) {
             if (!value.isAfter(date) && !value.isEqual(date)) {
