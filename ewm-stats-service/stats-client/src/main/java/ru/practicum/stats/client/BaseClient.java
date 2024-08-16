@@ -1,5 +1,6 @@
 package ru.practicum.stats.client;
 
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.lang.Nullable;
 import org.springframework.web.client.HttpStatusCodeException;
@@ -17,6 +18,10 @@ public class BaseClient {
 
     protected ResponseEntity<Object> get(String path, @Nullable Map<String, Object> parameters) {
         return makeAndSendRequest(HttpMethod.GET, path, parameters, null);
+    }
+
+    protected <T> ResponseEntity<T> get(String path, @Nullable Map<String, Object> parameters, ParameterizedTypeReference<T> type) {
+        return makeAndSendRequest(HttpMethod.GET, path, parameters, null, type);
     }
 
     protected <T> ResponseEntity<Object> post(String path, T body) {
@@ -40,6 +45,26 @@ public class BaseClient {
             return ResponseEntity.status(e.getStatusCode()).body(e.getResponseBodyAsByteArray());
         }
         return prepareResponse(statsServerResponse);
+    }
+
+    private <T> ResponseEntity<T> makeAndSendRequest(HttpMethod method,
+                                                          String path,
+                                                          @Nullable Map<String, Object> parameters,
+                                                          @Nullable T body,
+                                                          ParameterizedTypeReference<T> type) {
+        HttpEntity<T> requestEntity = new HttpEntity<>(body, defaultHeaders());
+
+        ResponseEntity<T> statsServerResponse;
+        try {
+            if (parameters != null) {
+                statsServerResponse = rest.exchange(path, method, requestEntity, type, parameters);
+            } else {
+                statsServerResponse = rest.exchange(path, method, requestEntity, type);
+            }
+        } catch (HttpStatusCodeException e) {
+            throw new RuntimeException("Ошибка получения данных с сервера статистики");
+        }
+        return statsServerResponse;
     }
 
     private HttpHeaders defaultHeaders() {

@@ -20,6 +20,7 @@ import java.util.List;
 @Slf4j
 public class CustomizedHitRepositoryImpl implements CustomizedHitRepository {
 
+
     @PersistenceContext
     private EntityManager entityManager;
 
