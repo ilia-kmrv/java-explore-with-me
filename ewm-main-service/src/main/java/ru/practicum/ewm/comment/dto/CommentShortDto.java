@@ -1,6 +1,8 @@
 package ru.practicum.ewm.comment.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
+import ru.practicum.ewm.util.Util;
 
 import java.time.LocalDateTime;
 
@@ -16,6 +18,7 @@ public class CommentShortDto {
 
     private String authorName;
 
+    @JsonFormat(pattern = Util.TIME_FORMAT)
     private LocalDateTime createdOn;
 
     private LocalDateTime edited;

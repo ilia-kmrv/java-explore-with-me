@@ -8,7 +8,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.comment.dto.CommentShortDto;
 import ru.practicum.ewm.comment.service.CommentService;
-import ru.practicum.stats.dto.Util;
+import ru.practicum.ewm.util.Util;
 
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
@@ -28,9 +28,9 @@ public class AdminCommentController {
     public List<CommentShortDto> getCommentsByAdmin(@RequestParam(required = false) Long[] users,
                                                     @RequestParam(required = false) Long[] events,
                                                     @RequestParam(required = false)
-                                               @DateTimeFormat(pattern = Util.TIME_FORMAT) LocalDateTime rangeStart,
+                                                    @DateTimeFormat(pattern = Util.TIME_FORMAT) LocalDateTime rangeStart,
                                                     @RequestParam(required = false)
-                                               @DateTimeFormat(pattern = Util.TIME_FORMAT) LocalDateTime rangeEnd,
+                                                    @DateTimeFormat(pattern = Util.TIME_FORMAT) LocalDateTime rangeEnd,
                                                     @RequestParam(defaultValue = "0") @PositiveOrZero Integer from,
                                                     @RequestParam(defaultValue = "10") @Positive Integer size) {
         log.info("Получен запрос на просмотр комментариев админом");

@@ -11,6 +11,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,15 +40,15 @@ public class CustomizedCommentRepositoryImpl implements CustomizedCommentReposit
         }
 
         if (rangeStart == null && rangeEnd == null) {
-            predicates.add(cb.greaterThan(root.get("createdOn"), Util.now()));
+            predicates.add(cb.greaterThan(root.get("createdOn"), Timestamp.valueOf(Util.now().minusYears(1))));
         }
 
         if (rangeStart != null) {
-            predicates.add(cb.greaterThanOrEqualTo(root.get("createdOn"), rangeStart));
+            predicates.add(cb.greaterThanOrEqualTo(root.get("createdOn"), Timestamp.valueOf(rangeStart)));
         }
 
         if (rangeEnd != null) {
-            predicates.add(cb.lessThanOrEqualTo(root.get("createdOn"), rangeEnd));
+            predicates.add(cb.lessThanOrEqualTo(root.get("createdOn"), Timestamp.valueOf(rangeEnd)));
         }
 
         cq.where(cb.and(predicates.toArray(new Predicate[0])));
