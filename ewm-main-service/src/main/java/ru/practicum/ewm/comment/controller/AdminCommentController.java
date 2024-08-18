@@ -33,7 +33,10 @@ public class AdminCommentController {
                                                     @DateTimeFormat(pattern = Util.TIME_FORMAT) LocalDateTime rangeEnd,
                                                     @RequestParam(defaultValue = "0") @PositiveOrZero Integer from,
                                                     @RequestParam(defaultValue = "10") @Positive Integer size) {
-        log.info("Получен запрос на просмотр комментариев админом");
+        log.info("Получен запрос на просмотр комментариев админом. Параметры запроса: " +
+                "users={}, events={}, rangeStart={}, rangeEnd={}, from={}, size={}", users, events, rangeStart,
+                rangeEnd, from, size);
+
         return commentService.getAllCommentsByAdmin(users, events, rangeStart, rangeEnd, from, size);
     }
 

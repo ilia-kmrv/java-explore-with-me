@@ -41,7 +41,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public CommentDto addComment(Long userId, Long eventId, NewCommentDto commentDto) {
-        log.debug("Обработка запросa на добавления комментария к событию id={} от пользователя id={}: {}",
+        log.debug("Обработка запроса на добавления комментария к событию id={} от пользователя id={}: {}",
                 eventId, userId, commentDto.toString());
 
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException(User.class, userId));
@@ -53,6 +53,7 @@ public class CommentServiceImpl implements CommentService {
 
         UserShortDto userShortDto = UserMapper.toUserShortDto(user);
         EventShortDto eventShortDto = eventService.makeEventShortDtoList(List.of(event)).get(0);
+        log.trace("Полученные Dto пользователя={} и события={}", userShortDto.toString(), eventShortDto.toString());
 
         Comment comment = Comment.builder().author(user).event(event).text(commentDto.getText()).build();
         Comment savedComment = commentRepository.save(comment);
@@ -72,9 +73,12 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<CommentShortDto> getAllCommentsByAdmin(Long[] users, Long[] events, LocalDateTime rangeStart,
                                                   LocalDateTime rangeEnd, Integer from, Integer size) {
-        log.debug("Обработка запроса на просмотр комментариев админом.");
+        log.debug("Обработка запроса на просмотр комментариев админом. Параметры: users={}, events={}, rangeStart={}," +
+                " rangeEnd={}, from={}, size={}", users, events, rangeStart, rangeEnd, from, size);
+
         Pageable page = Util.page(from, size, Sort.by(Sort.Direction.DESC, "createdOn"));
         List<Comment> comments = commentRepository.findAllByAdminParams(users, events, rangeStart, rangeEnd, page);
 
@@ -83,7 +87,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public CommentDto updateComment(Long userId, Long eventId, Long commentId, NewCommentDto commentDto) {
-        log.info("Обработка запроса на редактирование комментария id={}, eventId={}, userId={}: {}",
+        log.debug("Обработка запроса на редактирование комментария id={}, eventId={}, userId={}: {}",
                 commentId, eventId, userId, commentDto.toString());
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException(User.class, userId));
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new NotFoundException(Event.class, eventId));
@@ -99,33 +103,39 @@ public class CommentServiceImpl implements CommentService {
 
         UserShortDto userShortDto = UserMapper.toUserShortDto(user);
         EventShortDto eventShortDto = eventService.makeEventShortDtoList(List.of(event)).get(0);
+        log.trace("Полученные Dto пользователя={} и события={}", userShortDto.toString(), eventShortDto.toString());
 
         Comment commentToUpdate = CommentMapper.updateComment(comment, commentDto);
         commentToUpdate.setEdited(Util.now());
         Comment savedComment = commentRepository.save(commentToUpdate);
+        log.debug("Комментарий id={} сохранен в базу: {}", savedComment.getId(), savedComment);
 
         return CommentMapper.toDto(savedComment, userShortDto, eventShortDto);
     }
 
     @Override
     public void deleteComment(Long userId, Long eventId, Long commentId) {
-        log.info("Получен запрос на удаление комментария id={} от пользователя id={}", commentId, userId);
+        log.debug("Получен запрос на удаление комментария id={} от пользователя id={}", commentId, userId);
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException(User.class, userId));
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new NotFoundException(Event.class, eventId));
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new NotFoundException(Comment.class, commentId));
+
         if (!user.getId().equals(comment.getAuthor().getId())) {
             throw new ConflictException("Только автор  комментария  может удалить его.");
         }
 
         commentRepository.deleteById(commentId);
+        log.debug("Комментарий id={} удалён пользователем {}", commentId, user.getId());
     }
 
     @Override
     public void deleteCommentByAdmin(Long commentId) {
-        log.info("Обработка запроса на удаление комментария с id={} от админа.");
+        log.debug("Обработка запроса на удаление комментария с id={} от админа.");
         commentRepository.findById(commentId)
                 .orElseThrow(() -> new NotFoundException(Comment.class, commentId));
+
         commentRepository.deleteById(commentId);
+        log.debug("Комментарий id={} удалён админом", commentId);
     }
 }

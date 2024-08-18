@@ -9,6 +9,7 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 @Getter
 @Setter
+@ToString
 @Builder
 public class CategoryDto {
 

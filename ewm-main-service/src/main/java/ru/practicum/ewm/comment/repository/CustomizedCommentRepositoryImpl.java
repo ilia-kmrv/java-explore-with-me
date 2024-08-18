@@ -1,5 +1,6 @@
 package ru.practicum.ewm.comment.repository;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.query.QueryUtils;
 import ru.practicum.ewm.comment.model.Comment;
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 public class CustomizedCommentRepositoryImpl implements CustomizedCommentRepository {
 
     @PersistenceContext
@@ -24,6 +26,9 @@ public class CustomizedCommentRepositoryImpl implements CustomizedCommentReposit
     @Override
     public List<Comment> findAllByAdminParams(Long[] users, Long[] events, LocalDateTime rangeStart,
                                               LocalDateTime rangeEnd, Pageable page) {
+
+        log.trace("Поиск в базе админом по параметрам: users={}, events={}, rangeStart={}, rangeEnd={}, page={}",
+                users, events, rangeStart, rangeEnd, page);
 
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Comment> cq = cb.createQuery(Comment.class);

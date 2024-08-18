@@ -38,7 +38,7 @@ public class PrivateCommentController {
     public List<CommentShortDto> getCommentsByUser(@PathVariable Long eventId,
                                                    @RequestParam(defaultValue = "0") @PositiveOrZero Integer from,
                                                    @RequestParam(defaultValue = "10") @Positive Integer size) {
-        log.info("Получен запрос на просмотр комментариев к событию id={} c {} по {}", eventId, from, size);
+        log.info("Получен запрос на просмотр комментариев к событию id={} from={} size={}", eventId, from, size);
         return commentService.getAllCommentsByUser(eventId, from, size);
     }
 
