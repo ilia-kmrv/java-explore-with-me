@@ -27,4 +27,7 @@
 *Установка*
 ```bash
 git clone https://github.com/ilia-kmrv/java-explore-with-me.git
+cd java-explore-with-me
+mvn clean install
+docker compose up
 ```
