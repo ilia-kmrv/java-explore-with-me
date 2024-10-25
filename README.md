@@ -31,3 +31,11 @@ cd java-explore-with-me
 mvn clean install
 docker compose up
 ```
+
+*Коллекции postman тестов*
+[Сервис
+статистики](https://github.com/ilia-kmrv/java-explore-with-me/blob/update_readme/postman/Explore%20with%20me%20-%20stats%20API.json)
+[Основной
+сервис](https://github.com/ilia-kmrv/java-explore-with-me/blob/update_readme/postman/Test%20Explore%20With%20Me%20-%20Main%20service.json)
+[Тесты для
+comments](https://github.com/ilia-kmrv/java-explore-with-me/blob/update_readme/postman/feature.json)
